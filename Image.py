@@ -190,5 +190,4 @@ class Image(threading.Thread):
         try:
             self.loop.run_forever()
         except RuntimeError:
-            logging.info("Runtime error!")
             pass

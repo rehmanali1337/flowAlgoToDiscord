@@ -193,7 +193,7 @@ class RealTime(threading.Thread):
 
         # Control here means id is already cached.
         while not self.KILL:
-            logging.info("Checking for new data ...")
+            logging.info("Checking for new flow options data ...")
             all_items = self.driver.find_elements_by_class_name("option-flow")
             recent_id = self.data_file["flow_options_id"]
             if int(all_items[0].get_attribute("data-flowid")) > int(recent_id):
@@ -226,14 +226,6 @@ class RealTime(threading.Thread):
     async def start_bot(self):
         client = discord.Client()
         self.client = client
-
-        @staticmethod
-        @client.event
-        async def on_message(message):
-            if message.author == client.user:
-                return
-            await message.channel.send(f"from {self.thread_name}")
-
         client.loop.create_task(self.run_scraper())
         await client.start(self.token)
 
@@ -242,5 +234,4 @@ class RealTime(threading.Thread):
         try:
             self.loop.run_forever()
         except RuntimeError:
-            logging.info("Runtime error!")
             pass

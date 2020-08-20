@@ -124,7 +124,7 @@ class DarkPool(threading.Thread):
 
         # Control here means id is already cached.
         while not self.KILL:
-            logging.info("Checking for new data ...")
+            logging.info("Checking for new darkpool data ...")
             all_items = self.driver.find_elements_by_class_name("dark-flow")
             recent_id = self.data_file["darkpool_id"]
             if int(all_items[0].get_attribute("data-flowid")) > int(recent_id):
@@ -155,14 +155,6 @@ class DarkPool(threading.Thread):
     async def start_bot(self):
         client = discord.Client()
         self.client = client
-
-        @staticmethod
-        @client.event
-        async def on_message(message):
-            if message.author == client.user:
-                return
-            await message.channel.send(f"from {self.thread_name}")
-
         client.loop.create_task(self.run_scraper())
         await client.start(self.token)
 
@@ -171,5 +163,4 @@ class DarkPool(threading.Thread):
         try:
             self.loop.run_forever()
         except RuntimeError:
-            logging.info("Runtime error!")
             pass

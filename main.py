@@ -1,20 +1,8 @@
-import discord
-from discord.ext import tasks
 from configparser import ConfigParser
 import os
 import shelve
-import re
-import asyncio
 import logging
 import time
-import sys
-import threading
-import selenium
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
 
 # Local Imports
 from DarkPool import DarkPool
@@ -55,15 +43,53 @@ target_channels_names = {
     "golden": golden_channel_name,
     "black": black_channel_name,
 }
+if not os.path.exists("./tmps"):
+    os.mkdir("./tmps")
 
 data_file = shelve.open("./tmps/data")
 
-bot = Image(
-    1, "image", driver_path, url, site_username, site_password, token, ta_channel_name,
+alpha_ai = AlphaAI(
+    1,
+    "alpha_ai",
+    driver_path,
+    url,
+    site_username,
+    site_password,
+    token,
+    ai_channel_name,
+    data_file,
+)
+darkpool = DarkPool(
+    10,
+    "darkpool",
+    driver_path,
+    url,
+    site_username,
+    site_password,
+    token,
+    darkpool_channel_name,
+    data_file,
+)
+realtime = RealTime(
+    20,
+    "realtime",
+    driver_path,
+    url,
+    site_username,
+    site_password,
+    token,
+    target_channels_names,
+    data_file,
+)
+image = Image(
+    40, "image", driver_path, url, site_username, site_password, token, ta_channel_name,
 )
 
-try:
-    bot.start()
-except KeyboardInterrupt:
-    bot.KILL = True
-    print("Exiting ... Please wait ...")
+
+alpha_ai.start()
+time.sleep(3)
+darkpool.start()
+time.sleep(3)
+realtime.start()
+time.sleep(3)
+image.start()
