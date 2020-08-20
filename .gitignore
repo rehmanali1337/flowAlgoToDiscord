@@ -1,0 +1,11 @@
+conf.ini
+tmps/*
+test.py
+tests.py
+.vscode
+__pycache__/
+colorScheme
+backups.py
+discordbot.py
+flowagloScraper.py
+

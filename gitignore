@@ -1,0 +1,8 @@
+tmps/
+.vscode/
+__pycac*
+backups*
+conf.ini
+discordbot.py
+flowalgoScraper.py
+tests.py
