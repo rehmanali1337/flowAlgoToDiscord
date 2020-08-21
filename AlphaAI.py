@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common import exceptions as seleniumExceptions
 import discord
 import asyncio
+import re
 import logging
 import threading
 
@@ -48,9 +49,12 @@ class AlphaAI(threading.Thread):
     async def login(self):
         logging.info("Logging-in to flowalgo!")
         self.driver.get(self.url)
-        username_input = self.driver.find_element_by_xpath('//*[@id="login"]/input[1]')
-        password_input = self.driver.find_element_by_xpath('//*[@id="login"]/input[2]')
-        login_button = self.driver.find_element_by_xpath('//*[@id="login"]/input[3]')
+        username_input = self.driver.find_element_by_xpath(
+            '//*[@id="login"]/input[1]')
+        password_input = self.driver.find_element_by_xpath(
+            '//*[@id="login"]/input[2]')
+        login_button = self.driver.find_element_by_xpath(
+            '//*[@id="login"]/input[3]')
 
         username_input.send_keys(self.username)
         password_input.send_keys(self.password)
@@ -62,7 +66,8 @@ class AlphaAI(threading.Thread):
                 )
             )
             WebDriverWait(self.driver, 15).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="close-aai"]'))
+                EC.presence_of_element_located(
+                    (By.XPATH, '//*[@id="close-aai"]'))
             )
             WebDriverWait(self.driver, 15).until(
                 EC.presence_of_element_located(
@@ -73,17 +78,33 @@ class AlphaAI(threading.Thread):
             pass
         self.FLOW_LOGIN = True
 
+    # Remove emojies from strings
+    @staticmethod
+    def deEmojify(text):
+        regrex_pattern = re.compile(
+            pattern="["
+            "\U0001F600-\U0001F64F"  # emoticons
+            "\U0001F300-\U0001F5FF"  # symbols & pictographs
+            "\U0001F680-\U0001F6FF"  # transport & map symbols
+            "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+            "]+",
+            flags=re.UNICODE,
+        )
+        return regrex_pattern.sub(r"", text)
+
     async def send(self, desc, signal_type):
         if signal_type == "long":
             clr = discord.Color.blue()
         else:
             clr = discord.Color.red()
-        embd = discord.Embed(title="Alpha AI", type="rich", description=desc, color=clr)
+        embd = discord.Embed(title="Alpha AI", type="rich",
+                             description=desc, color=clr)
         if not self.target_channel:
-            self.target_channel = discord.utils.find(
-                lambda m: m.name == self.target_channel_name,
-                self.client.guilds[0].text_channels,
-            )
+            channels = self.client.guilds[0].text_channels
+            for channel in channels:
+                if self.deEmojify(channel.name) == self.deEmojify(self.target_channel_name):
+                    self.target_channel = channel
+                    break
         await self.target_channel.send(embed=embd)
 
     async def wait_until_login(self):
@@ -102,7 +123,8 @@ class AlphaAI(threading.Thread):
                 EC.presence_of_element_located((By.CLASS_NAME, "aai_signal"))
             )
             WebDriverWait(self.driver, 20).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="fa_aai"]/div[1]'))
+                EC.presence_of_element_located(
+                    (By.XPATH, '//*[@id="fa_aai"]/div[1]'))
             )
             fullscreen_btn = WebDriverWait(self.driver, 20).until(
                 EC.presence_of_element_located(
@@ -143,7 +165,8 @@ class AlphaAI(threading.Thread):
                             continue
                     break
 
-                self.data_file["ai_id"] = all_items[0].get_attribute("data-flowid")
+                self.data_file["ai_id"] = all_items[0].get_attribute(
+                    "data-flowid")
                 self.data_file.sync()
             await asyncio.sleep(5)
 

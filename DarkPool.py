@@ -48,9 +48,12 @@ class DarkPool(threading.Thread):
     async def login(self):
         logging.info("Logging-in to flowalgo!")
         self.driver.get(self.url)
-        username_input = self.driver.find_element_by_xpath('//*[@id="login"]/input[1]')
-        password_input = self.driver.find_element_by_xpath('//*[@id="login"]/input[2]')
-        login_button = self.driver.find_element_by_xpath('//*[@id="login"]/input[3]')
+        username_input = self.driver.find_element_by_xpath(
+            '//*[@id="login"]/input[1]')
+        password_input = self.driver.find_element_by_xpath(
+            '//*[@id="login"]/input[2]')
+        login_button = self.driver.find_element_by_xpath(
+            '//*[@id="login"]/input[3]')
 
         username_input.send_keys(self.username)
         password_input.send_keys(self.password)
@@ -62,7 +65,8 @@ class DarkPool(threading.Thread):
                 )
             )
             WebDriverWait(self.driver, 15).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="close-aai"]'))
+                EC.presence_of_element_located(
+                    (By.XPATH, '//*[@id="close-aai"]'))
             )
             WebDriverWait(self.driver, 15).until(
                 EC.presence_of_element_located(
@@ -81,10 +85,11 @@ class DarkPool(threading.Thread):
             color=discord.Color(000000),
         )
         if not self.target_channel:
-            self.target_channel = discord.utils.find(
-                lambda m: m.name == self.target_channel_name,
-                self.client.guilds[0].text_channels,
-            )
+            channels = self.client.guilds[0].text_channels
+            for channel in channels:
+                if self.deEmojify(channel.name) == self.deEmojify(self.target_channel_name):
+                    self.target_channel = channel
+                    break
         await self.target_channel.send(embed=embd)
 
     async def wait_until_login(self):
@@ -137,7 +142,8 @@ class DarkPool(threading.Thread):
                         data = text.split("\n")
                         logging.info(len(data))
                         if len(data) == 5:
-                            mm = item.find_element_by_class_name("notional").text
+                            mm = item.find_element_by_class_name(
+                                "notional").text
                             desc = f"Time\n{data[0]}\nTicker\n{data[1]}\nQuantity\n{data[2]}\nSpot Price\n{data[3]}\nMM\n{mm}"
                             logging.info(f"Desc: {desc}")
                             logging.info("Description is ready!")

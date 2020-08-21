@@ -53,9 +53,12 @@ class RealTime(threading.Thread):
     async def login(self):
         logging.info("Logging-in to flowalgo!")
         self.driver.get(self.url)
-        username_input = self.driver.find_element_by_xpath('//*[@id="login"]/input[1]')
-        password_input = self.driver.find_element_by_xpath('//*[@id="login"]/input[2]')
-        login_button = self.driver.find_element_by_xpath('//*[@id="login"]/input[3]')
+        username_input = self.driver.find_element_by_xpath(
+            '//*[@id="login"]/input[1]')
+        password_input = self.driver.find_element_by_xpath(
+            '//*[@id="login"]/input[2]')
+        login_button = self.driver.find_element_by_xpath(
+            '//*[@id="login"]/input[3]')
 
         username_input.send_keys(self.username)
         password_input.send_keys(self.password)
@@ -67,7 +70,8 @@ class RealTime(threading.Thread):
                 )
             )
             WebDriverWait(self.driver, 15).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="close-aai"]'))
+                EC.presence_of_element_located(
+                    (By.XPATH, '//*[@id="close-aai"]'))
             )
             WebDriverWait(self.driver, 15).until(
                 EC.presence_of_element_located(
@@ -107,11 +111,12 @@ class RealTime(threading.Thread):
                 description=desc,
                 color=discord.Color(000000),
             )
-        if not self.target_channels[item_type]:
-            self.target_channels[item_type] = discord.utils.find(
-                lambda m: m.name == self.target_channels_names[item_type],
-                self.client.guilds[0].text_channels,
-            )
+        if not self.target_channel:
+            channels = self.client.guilds[0].text_channels
+            for channel in channels:
+                if self.deEmojify(channel.name) == self.deEmojify(self.target_channel_name):
+                    self.target_channel = channel
+                    break
         await self.target_channels[item_type].send(embed=embd)
 
     async def type_of(self, item):
@@ -151,7 +156,8 @@ class RealTime(threading.Thread):
             #     )
             # )
             ai_btn = WebDriverWait(self.driver, 15).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="close-aai"]'))
+                EC.presence_of_element_located(
+                    (By.XPATH, '//*[@id="close-aai"]'))
             )
 
             darkpool_btn = WebDriverWait(self.driver, 15).until(
