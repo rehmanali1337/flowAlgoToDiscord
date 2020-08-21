@@ -127,12 +127,13 @@ class RealTime(threading.Thread):
                 description=desc,
                 color=discord.Color(000000),
             )
-        if not self.target_channel:
+        if not self.target_channels[item_type]:
             channels = self.client.guilds[0].text_channels
             for channel in channels:
-                if self.deEmojify(channel.name) == self.deEmojify(self.target_channel_name):
-                    self.target_channel = channel
-                    break
+                if self.deEmojify(channel.name) == self.deEmojify(self.target_channels_names[item_type]):
+                    self.target_channels[item_type] = channel
+                    continue
+
         await self.target_channels[item_type].send(embed=embd)
 
     async def type_of(self, item):
