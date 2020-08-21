@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common import exceptions as seleniumExceptions
 import discord
+import re
 import asyncio
 import logging
 import threading

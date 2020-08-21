@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common import exceptions as seleniumExceptions
 import discord
 import asyncio
+import re
 import logging
 import threading
 
